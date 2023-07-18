@@ -1,0 +1,27 @@
+pipeline {
+   agent any
+   stages { 
+    stage('Clone') {
+      steps {
+        script {
+           // The below will clone your repo and will be checked out to master branch by default.
+    
+            withCredentials([ string(credentialsId: 'github', variable: 'SECRET'),string(credentialsId: 'USERNAME', variable: 'USER') ]) {
+            sh '''
+                 # modify some files
+                 rm -r jenkins-pipeline-test
+                 git clone https://$USER:$SECRET@github.com/UncleBansh/jenkins-pipeline-test.git
+                 cd jenkins-pipeline-test
+                 echo $(date) '- PRjob executed' >> job.log
+                 cat job.log
+                 git add .
+                 git  -c user.email="jenkins@jenkins.ru" commit -m "update log"
+                 git push
+            '''
+                }
+          
+          }
+       }
+    }
+  }
+}
